@@ -40,25 +40,132 @@ server.listen(100)
 
 list_of_clients = [] 
 
+def __init__(self,rt='',s=0,p=0,r=0,t=0,a=1800,PcNumber='',rno=101):
+
+        print ("\n\n*****WELCOME TO CYBER CAFE*****\n")
+
+        self.rt=rt
+
+        self.r=r
+
+        self.t=t
+
+        self.p=p
+
+        self.s=s
+        self.a=a
+        self.PcNumber=PcNumber
+        self.rno=rno
+def display(self):
+        print ("******CYBER BILL******")
+        print ("Customer details:")
+        print ("Customer PC Number:",self.PcNumber)
+        print ("Room no.",self.rno)
+        print ("Your PC rent is:",self.s)
+        print ("Your Food bill is:",self.r)
+
+        self.rt=self.s+self.t+self.p+self.r
+
+        print ("Your sub total bill is:",self.rt)
+        print ("Additional Service Charges is",self.a)
+        print ("Your grandtotal bill is:",self.rt+self.a,"\n")
+        self.rno+=1
+ def HourPlan(self):#sel1353
+
+        print ("We have the following Hour Plan for you:-")
+
+        print ("1.  type A---->RM 5 PN\-")
+
+        print ("2.  type B---->rs 10 PN\-")
+
+        print ("3.  type C---->rs 15 PN\-")
+
+        print ("4.  type D---->rs 20 PN\-")
+
+        x=int(input("Enter Your Choice Please->"))
+
+
+        if(x==1):
+
+            print ("you have opted Plan type A")
+
+            self.s=6000*n
+
+        elif (x==2):
+
+            print ("you have opted Plan type B")
+
+            self.s=5000*n
+
+        elif (x==3):
+
+            print ("you have opted Plan type C")
+
+            self.s=4000*n
+
+        elif (x==4):
+            print ("you have opted Plan type D")
+
+            self.s=3000*n
+
+        else:
+
+            print ("please choose a Plan")
+
+        print ("your Plan rent is =",self.s,"\n")
+
 def clientthread(conn, addr): 
 
 	# sends a message to the client whose user object is conn 
 	#conn.send("Welcome to this chatroom!") 
-    conn.send("Let's chat and play Tic Tac Toe") 
+    conn.send("Let's chat") 
 
     while True: 
         try:
             message = conn.recv(2048) 
             if message: 
+                
+        print("1.Enter Customer Data")
+        
+        print("2.Calculate Plans")
 
-                """prints the message and address of the 
-                user who just sent the message on the server 
-                terminal"""
-                print ("<" + addr[0] + "> " + message) 
+        print("3.Calculate restaurant bill")
 
-				# Calls broadcast function to send message to all 
-                message_to_send = "<" + addr[0] + "> " + message 
-                broadcast(message_to_send, conn) 
+        print("4.Calculate laundry bill")
+
+
+        print("6.Show total cost")
+
+        print("7.EXIT")
+
+        b=int(input("\nEnter your choice:"))
+        if (b==1):
+            a.inputdata()
+
+        if (b==2):
+
+            a.roomrent()
+
+        if (b==3):
+
+            a.restaurentbill()
+
+        if (b==4):
+
+            a.laundrybill()
+
+        if (b==5):
+
+            a.gamebill()
+
+        if (b==6):
+
+            a.display()
+
+        if (b==7):
+
+            quit()
+        
 
             else: 
                 """message may have no content if the connection 
