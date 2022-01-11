@@ -1,3 +1,4 @@
+import dataclasses
 import socket
 import select
 import sys
@@ -11,16 +12,11 @@ a continuous flow."""
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-# checks whether sufficient arguments have been provided
-if len(sys.argv) != 3:
-    print("Correct usage: $ python <IP address> <port number>")
-    exit()
-
 # takes the first argument from command prompt as IP address
-IP_address = str(sys.argv[1])
+IP_address = "localhost"
 
 # takes second argument from command prompt as port number
-Port = int(sys.argv[2])
+Port = 6000
 
 """ 
 binds the server to an entered IP address and at the 
@@ -40,56 +36,69 @@ server.listen(100)
 list_of_clients = []
 
 
-class hotelfarecal:
-    def __init__(self, conn, rt='', s=0, p=0, r=0, t=0, a=1800, name='', PcNumber='', rno=101):
-        self.conn = conn
-        self.rt = rt
-        self.r = r
-        self.t = t
-        self.p = p
-        self.s = s
-        self.a = a
-        self.name = name
-        self.PcNumber = PcNumber
-        self.rno = rno
+class HotelFarecal:
+    def __init__(self):
+        self.occupied_pc = []
+        self.available_pc = [1001, 1002, 1003, 1004, 1005]
 
-    def inputdata(self):
-        self.conn.send("\nEnter your name:<input here>".encode('utf-8'))
-        receive = self.conn.recv(2048)
-        self.name = receive.decode('utf-8')
-        print("received name:", self.name)
-        self.conn.send("\nEnter your Pc Number:<input here>".encode('utf-8'))
-        receive = self.conn.recv(2048)
-        self.PcNumber = receive.decode('utf-8')
-        print("received name:", self.PcNumber)
-        print("Your room no.:", self.rno, "\n")
+    def input_data(self, client):
+        client.name = client.input("\nEnter your name:")
+        pc_avail = ""
+        for pc_no in self.available_pc:
+            pc_avail += f"PC NO: {pc_no}\n"
 
-    def Plans(self):  # sel1353
+        client.pc = int(client.input(f"{pc_avail}\nEnter your Pc Number:"))
+        self.occupied_pc.append(client.pc)
+        self.available_pc.remove(client.pc)
 
-        print("We have the following Plans for you:-")
-        print("1.  Plan A---->Rm 5 for 2 hour\-")
-        print("2.  Plan B---->Rm 10 for 4 hour\-")
-        print("3.  Plan C---->Rm 20 for 6 hour\-")
-        print("4.  Plan D---->Rm 25 for 8 hour\-")
-        x = int(input("Enter Your Choice Please->"))
-        n = int(input("For How Many PC Did You Book:"))
-        if (x == 1):
-            print("you have opted room Plan A")
-            self.s = 5 * n
-        elif (x == 2):
-            print("you have opted room Plan B")
-            self.s = 10 * n
-        elif (x == 3):
-            print("you have opted room Plan C")
-            self.s = 20 * n
-        elif (x == 4):
-            print("you have opted room Plan D")
-            self.s = 25 * n
-        else:
-            print("please choose a Plan")
-        print("your room rent is =", self.s, "\n")
+    def discount(self, client):
+        while True:
+            n = client.input("Do you want to double your plan for a 10% discount?(y/n)")
+            val = n.lower()
+            if val in ('yes', 'y'):
+                return True
+            elif val in ('no', 'n'):
+                return False
+            else:
+                client.send("Invalid Response, please respond (y) for Yes or (n) for No")
 
-    def Cafebill(self):
+    def plans(self, client):
+        to_print = """We have the following Plans for you:-
+        1.  Plan A---->Rm 5 for 2 hour\-
+        2.  Plan B---->Rm 10 for 4 hour\-
+        3.  Plan C---->Rm 20 for 6 hour\-
+        4.  Plan D---->Rm 25 for 8 hour\-
+        
+        Enter Your Choice Please->"""
+        while True:
+            try:
+                x = int(client.input(to_print))
+                if (x == 1):
+                    client.send("you have opted room Plan A")
+                    client.plan = 5
+                elif (x == 2):
+                    client.send("you have opted room Plan B")
+                    client.plan = 10
+                elif (x == 3):
+                    client.send("you have opted room Plan C")
+                    client.plan = 20
+                elif (x == 4):
+                    client.send("you have opted room Plan D")
+                    client.plan = 25
+                else:
+                    client.send("please choose a Plan")
+                    continue
+                break
+            except ValueError:
+                client.send("Invalid number")
+
+        has_discount = self.discount(client)
+        if has_discount:
+            client.plan *= 2 * .9
+        client.send(f"Your total payment for your plan is RM{client.plan}\n")
+
+    def cafe_bill(self, client):
+        price = None
         while True:
             to_print = """
             *****Cyber Cafe Menu*****
@@ -100,51 +109,74 @@ class hotelfarecal:
             5.dinner--->RM150
             6.Exit
             *********************************
-            Enter your choice:<input here>"""
-            c = int(input("Enter your choice:"))
-
+            Enter your choice:"""
+            c = int(client.input(to_print))
             if (c == 1):
-                d = int(input("Enter the quantity:"))
-                self.r = self.r + 20 * d
+                price = 20
             elif (c == 2):
-                d = int(input("Enter the quantity:"))
-                self.r = self.r + 10 * d
+                price = 10
             elif (c == 3):
-                d = int(input("Enter the quantity:"))
-                self.r = self.r + 90 * d
+                price = 90
             elif (c == 4):
-                d = int(input("Enter the quantity:"))
-                self.r = self.r + 110 * d
+                price = 110
             elif (c == 5):
-                d = int(input("Enter the quantity:"))
-                self.r = self.r + 150 * d
+                price = 150
             elif (c == 6):
-                break;
+                return
             else:
-                print("Invalid option")
-        print("Total food Cost=RM", self.r, "\n")
+                client.send("Invalid option")
+                continue
+            break
+
+        while True:
+            try:
+                q = int(client.input("Enter the quantity:"))
+            except ValueError:
+                client.send("Invalid number")
+            else:
+                client.cafe_bill = price * q
+                client.send(f"Total food Cost=RM{client.cafe_bill}\n")
+                break
+
+    def display(self, client):
+        client.send("******Cyber Cafe BILL******\n")
+        client.send("Customer details:\n")
+        client.send("Customer name:", client.name, "\n")
+        client.send("Room no.", client.pc, "\n")
+        client.send("Your PC rent is:", client.plan, "\n")
+        client.send("Your Food bill is:", client.cafe_bill, "\n")
+        client.send("Your grandtotal bill is:", client.total(), "\n")
 
 
-    def display(self):
-        print("******Cyber Cafe BILL******")
-        print("Customer details:")
-        print("Customer name:", self.name)
-        print("Room no.", self.rno)
-        print("Your PC rent is:", self.s)
-        print("Your Food bill is:", self.r)
+class Client:
+    def __init__(self, conn: socket.socket, pc: int, name: str) -> None:
+        self.conn = conn
+        self.pc = pc
+        self.name = name
+        self.cafe_bill = 0
+        self.plan = 0
 
-        self.rt = self.s + self.t + self.p + self.r
+    def input(self, *send):
+        to_send = " ".join(map(str, send)) + "<input here>"
+        self.send(to_send)
+        return self.conn.recv(2048).decode('utf-8')
 
-        print("Your sub total bill is:", self.rt)
-        print("Additional Service Charges is", self.a)
-        print("Your grandtotal bill is:", self.rt + self.a, "\n")
-        self.rno += 1
+    def send(self, *to_send):
+        formatted = " ".join(map(str, to_send))
+        print("Sending to ", conn.getsockname(), ":", formatted)
+        self.conn.send(formatted.encode('utf-8'))
+
+    def total(self):
+        return self.plan + self.cafe_bill
+
+
+hotel = HotelFarecal()
 
 
 def clientthread(conn, addr):
     # sends a message to the client whose user object is conn
     # conn.send("Welcome to this chatroom!")
-    a = hotelfarecal(conn)
+    client = Client(conn, 0, "")
     while True:
         to_print = """
         *****WELCOME TO HEWING HOTEL*****
@@ -154,29 +186,27 @@ def clientthread(conn, addr):
         4.Show total cost
         5.EXIT
         *********************************
-        Enter your choice:<input here>"""
+        Enter your choice:"""
 
-        conn.send(to_print.encode('utf-8'))
         try:
-            input_anda = conn.recv(2048)
-
-            b = int(input_anda.decode('utf-8'))
+            input_anda = client.input(to_print)
+            b = int(input_anda)
             if (b == 1):
-                a.inputdata()
+                hotel.input_data(client)
 
             if (b == 2):
-                a.Plans()
+                hotel.plans(client)
 
             if (b == 3):
-                a.Cafebill()
+                hotel.cafe_bill(client)
 
             if (b == 4):
-                a.display()
+                hotel.display(client)
 
             if (b == 5):
                 break
         except ValueError:
-            conn.send("Invalid number".encode("utf-8"))
+            client.send("Invalid number")
     conn.close()
 
 
