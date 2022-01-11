@@ -1,4 +1,3 @@
-
 import socket
 import select
 import sys
@@ -59,14 +58,15 @@ class hotelfarecal:
         receive = self.conn.recv(2048)
         self.name = receive.decode('utf-8')
         print("received name:", self.name)
-        self.PcNumber = input("\nEnter your Pc Number:")
-        self.cindate = input("\nEnter your check in date:")
-        self.coutdate = input("\nEnter your checkout date:")
+        self.conn.send("\nEnter your Pc Number:<input here>".encode('utf-8'))
+        receive = self.conn.recv(2048)
+        self.PcNumber = receive.decode('utf-8')
+        print("received name:", self.PcNumber)
         print("Your room no.:", self.rno, "\n")
 
-    def roomrent(self):  # sel1353
+    def Plans(self):  # sel1353
 
-        print("We have the following rooms for you:-")
+        print("We have the following Plans for you:-")
         print("1.  Plan A---->Rm 5 for 2 hour\-")
         print("2.  Plan B---->Rm 10 for 4 hour\-")
         print("3.  Plan C---->Rm 20 for 6 hour\-")
@@ -74,77 +74,61 @@ class hotelfarecal:
         x = int(input("Enter Your Choice Please->"))
         n = int(input("For How Many PC Did You Book:"))
         if (x == 1):
-
             print("you have opted room Plan A")
-
             self.s = 5 * n
-
         elif (x == 2):
-
             print("you have opted room Plan B")
-
             self.s = 10 * n
-
         elif (x == 3):
-
             print("you have opted room Plan C")
-
             self.s = 20 * n
-
         elif (x == 4):
             print("you have opted room Plan D")
-
             self.s = 25 * n
-
         else:
-
             print("please choose a Plan")
-
         print("your room rent is =", self.s, "\n")
 
-    def restaurentbill(self):
-
-        print("*****Cyber Cafe MENU*****")
-        print("1.water----->RM20", "2.tea----->RM10", "3.breakfast combo--->RM90", "4.lunch---->RM110",
-              "5.dinner--->RM150", "6.Exit")
-
+    def Cafebill(self):
         while True:
-
+            to_print = """
+            *****Cyber Cafe Menu*****
+            1.water----->RM20
+            2.tea----->RM10
+            3.breakfast combo--->RM90
+            4.lunch---->RM110
+            5.dinner--->RM150
+            6.Exit
+            *********************************
+            Enter your choice:<input here>"""
             c = int(input("Enter your choice:"))
 
             if (c == 1):
                 d = int(input("Enter the quantity:"))
                 self.r = self.r + 20 * d
-
             elif (c == 2):
                 d = int(input("Enter the quantity:"))
                 self.r = self.r + 10 * d
-
             elif (c == 3):
                 d = int(input("Enter the quantity:"))
                 self.r = self.r + 90 * d
-
             elif (c == 4):
                 d = int(input("Enter the quantity:"))
                 self.r = self.r + 110 * d
-
             elif (c == 5):
                 d = int(input("Enter the quantity:"))
                 self.r = self.r + 150 * d
-
             elif (c == 6):
                 break;
             else:
                 print("Invalid option")
-
         print("Total food Cost=RM", self.r, "\n")
 
 
     def display(self):
-        print("******HOTEL BILL******")
+        print("******Cyber Cafe BILL******")
         print("Customer details:")
         print("Customer name:", self.name)
-        print("Customer address:", self.address)
         print("Room no.", self.rno)
         print("Your PC rent is:", self.s)
         print("Your Food bill is:", self.r)
@@ -165,12 +149,10 @@ def clientthread(conn, addr):
         to_print = """
         *****WELCOME TO HEWING HOTEL*****
         1.Enter Customer Data
-        2.Calculate rommrent
-        3.Calculate restaurant bill
-        4.Calculate laundry bill
-        5.Calculate gamebill
-        6.Show total cost
-        7.EXIT
+        2.Calculate Plan Bill
+        3.Calculate Food bill
+        4.Show total cost
+        5.EXIT
         *********************************
         Enter your choice:<input here>"""
 
@@ -183,21 +165,15 @@ def clientthread(conn, addr):
                 a.inputdata()
 
             if (b == 2):
-                a.roomrent()
+                a.Plans()
 
             if (b == 3):
-                a.restaurentbill()
+                a.Cafebill()
 
             if (b == 4):
-                a.laundrybill()
-
-            if (b == 5):
-                a.gamebill()
-
-            if (b == 6):
                 a.display()
 
-            if (b == 7):
+            if (b == 5):
                 break
         except ValueError:
             conn.send("Invalid number".encode("utf-8"))
