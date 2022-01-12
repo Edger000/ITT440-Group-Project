@@ -3,6 +3,7 @@ import socket
 import select
 import sys
 import threading
+import time
 
 """The first argument AF_INET is the address domain of the 
 socket. This is used when we have an Internet Domain with 
@@ -96,6 +97,18 @@ class HotelFarecal:
         if has_discount:
             client.plan *= 2 * .9
         client.send(f"Your total payment for your plan is RM{client.plan}\n")
+
+    def timer(self, client):
+        t = client.plans()
+        
+        while t:
+        hours = t // 3600
+        mins = t // 60
+        secs = t % 3600
+        timer = '{:02d}:{02d}:{02d}'.format(hours, mins, secs)
+        print(timer, end="\r")
+        t -= 1
+        print('Time Up!!')
 
     def cafe_bill(self, client):
         price = None
