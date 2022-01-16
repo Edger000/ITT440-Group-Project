@@ -51,6 +51,17 @@ class HotelFarecal:
         client.pc = int(client.input(f"{pc_avail}\nEnter your Pc Number:"))
         self.occupied_pc.append(client.pc)
         self.available_pc.remove(client.pc)
+    
+    def membership(self, client):
+        while True:
+            n = client.input("Do you have membership? Member will get 10& discount(y/n)")
+            val = n.lower()
+            if val in ('yes', 'y'):
+                return True
+            elif val in ('no', 'n'):
+                return False
+            else:
+                client.send("Invalid Response, please respond (y) for Yes or (n) for No")
 
     def discount(self, client):
         while True:
@@ -66,9 +77,9 @@ class HotelFarecal:
     def plans(self, client):
         to_print = """We have the following Plans for you:-
         1.  Plan A---->Rm 5 for 2 hour\-
-        2.  Plan B---->Rm 10 for 4 hour\-
-        3.  Plan C---->Rm 20 for 6 hour\-
-        4.  Plan D---->Rm 25 for 8 hour\-
+        2.  Plan B---->Rm 10 for 5 hour\-
+        3.  Plan C---->Rm 20 for 7 hour\-
+        4.  Plan D---->Rm 25 for 9 hour\-
         
         Enter Your Choice Please->"""
         while True:
@@ -94,8 +105,13 @@ class HotelFarecal:
                 client.send("Invalid number")
 
         has_discount = self.discount(client)
+        has_membership = self.membership(client)
         if has_discount:
-            client.plan *= 2 * .9
+            client.plan *= 2 - (client.plan * 0.03)
+        elif has_membership:
+            client.plan *= - (client.plan * 0.1)
+        elif has_discount and has_membership:
+            client_plan *= 2 - (client_plan * 0.13)
         client.send(f"Your total payment for your plan is RM{client.plan}\n")
 
     def timer(self, client):
