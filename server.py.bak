@@ -98,6 +98,18 @@ class HotelFarecal:
             client.plan *= 2 * .9
         client.send(f"Your total payment for your plan is RM{client.plan}\n")
 
+    def timer(self, client):
+        t = client.plans()
+        
+        while t:
+        hours = t // 3600
+        mins = t // 60
+        secs = t % 3600
+        timer = '{:02d}:{02d}:{02d}'.format(hours, mins, secs)
+        print(timer, end="\r")
+        t -= 1
+        print('Time Up!!')
+
     def cafe_bill(self, client):
         price = None
         while True:
