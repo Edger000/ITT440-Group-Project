@@ -37,7 +37,7 @@ server.listen(100)
 list_of_clients = []
 
 
-class HotelFarecal:
+class CyberCafe:
     def __init__(self):
         self.occupied_pc = []
         self.available_pc = [1001, 1002, 1003, 1004, 1005]
@@ -119,7 +119,6 @@ class HotelFarecal:
 
     def timer(self, client):
         t = client.plans()
-        
         while t:
         hours = t // 3600
         mins = t // 60
@@ -128,6 +127,49 @@ class HotelFarecal:
         print(timer, end="\r")
         t -= 1
         print('Time Up!!')
+    
+    def addTime(self,client)
+        while True:
+            n = client.input("Your time is up! Do you wish to add more time? please respond (y) for Yes or (n) for No")
+            val = n.lower()
+            if val in ('yes', 'y'):
+                if val in ('yes', 'y'):
+                to_print = """We have the following add options for you:-
+                1.  A---->Rm 5 for 3 hour\-
+                2.  B---->Rm 10 for 6 hour\-
+                3.  C---->Rm 20 for 8 hour\-
+                4.  D---->Rm 25 for 10 hour\-
+        
+                Enter Your Choice Please->"""
+                while True:
+                    try:
+                        x = int(client.input(to_print))
+                        if (x == 1):
+                            client.send("you have opted room Plan A")
+                            client.plan = 5
+                        elif (x == 2):
+                            client.send("you have opted room Plan B")
+                            client.plan = 10
+                        elif (x == 3):
+                            client.send("you have opted room Plan C")
+                            client.plan = 20
+                        elif (x == 4):
+                            client.send("you have opted room Plan D")
+                            client.plan = 25
+                        else:
+                            client.send("please choose a Plan")
+                            continue
+                        break
+                    except ValueError:
+                        client.send("Invalid number")
+                    elif val in ('no', 'n'):
+                        return False
+                    else:
+                        client.send("Invalid Response, please respond (y) for Yes or (n) for No")
+            elif val in ('no', 'n'):
+                return False
+            else:
+                client.send("Invalid Response, please respond (y) for Yes or (n) for No")
 
     def cafe_bill(self, client):
         price = None
@@ -202,7 +244,7 @@ class Client:
         return self.plan + self.cafe_bill
 
 
-hotel = HotelFarecal()
+cyber = CyberCafe()
 
 
 def clientthread(conn, addr):
@@ -211,7 +253,7 @@ def clientthread(conn, addr):
     client = Client(conn, 0, "")
     while True:
         to_print = """
-        *****WELCOME TO HEWING HOTEL*****
+        *****WELCOME TO HEWING cyber*****
         1.Enter Customer Data
         2.Calculate Plan Bill
         3.Calculate Food bill
@@ -224,16 +266,16 @@ def clientthread(conn, addr):
             input_anda = client.input(to_print)
             b = int(input_anda)
             if (b == 1):
-                hotel.input_data(client)
+                cyber.input_data(client)
 
             if (b == 2):
-                hotel.plans(client)
+                cyber.plans(client)
 
             if (b == 3):
-                hotel.cafe_bill(client)
+                cyber.cafe_bill(client)
 
             if (b == 4):
-                hotel.display(client)
+                cyber.display(client)
 
             if (b == 5):
                 break
