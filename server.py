@@ -109,6 +109,49 @@ class HotelFarecal:
         print(timer, end="\r")
         t -= 1
         print('Time Up!!')
+    
+    def addTime(self,client)
+        while True:
+            n = client.input("Your time is up! Do you wish to add more time? please respond (y) for Yes or (n) for No")
+            val = n.lower()
+            if val in ('yes', 'y'):
+                if val in ('yes', 'y'):
+                to_print = """We have the following add options for you:-
+                1.  A---->Rm 5 for 3 hour\-
+                2.  B---->Rm 10 for 6 hour\-
+                3.  C---->Rm 20 for 8 hour\-
+                4.  D---->Rm 25 for 10 hour\-
+        
+                Enter Your Choice Please->"""
+                while True:
+                    try:
+                        x = int(client.input(to_print))
+                        if (x == 1):
+                            client.send("you have opted room Plan A")
+                            client.plan = 5
+                        elif (x == 2):
+                            client.send("you have opted room Plan B")
+                            client.plan = 10
+                        elif (x == 3):
+                            client.send("you have opted room Plan C")
+                            client.plan = 20
+                        elif (x == 4):
+                            client.send("you have opted room Plan D")
+                            client.plan = 25
+                        else:
+                            client.send("please choose a Plan")
+                            continue
+                        break
+                    except ValueError:
+                        client.send("Invalid number")
+                    elif val in ('no', 'n'):
+                        return False
+                    else:
+                        client.send("Invalid Response, please respond (y) for Yes or (n) for No")
+            elif val in ('no', 'n'):
+                return False
+            else:
+                client.send("Invalid Response, please respond (y) for Yes or (n) for No")
 
     def cafe_bill(self, client):
         price = None
