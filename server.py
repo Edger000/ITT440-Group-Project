@@ -107,11 +107,14 @@ class HotelFarecal:
         has_discount = self.discount(client)
         has_membership = self.membership(client)
         if has_discount:
-            client.plan *= 2 - (client.plan * 0.03)
-        elif has_membership:
-            client.plan *= - (client.plan * 0.1)
-        elif has_discount and has_membership:
-            client_plan *= 2 - (client_plan * 0.13)
+            client.plan *= 2 - client.plan * 0.1
+            client.time *= 2
+
+        client.time = datetime.datetime.now() + datetime.timedelta(hours=client.time)
+
+        if has_membership:
+            client.plan -= client.plan * 0.1
+
         client.send(f"Your total payment for your plan is RM{client.plan}\n")
 
     def timer(self, client):
