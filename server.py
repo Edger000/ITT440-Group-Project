@@ -116,7 +116,6 @@ class CyberCafe:
 
     def timer(self, client):
         t = client.plans()
-        
         while t:
         hours = t // 3600
         mins = t // 60
