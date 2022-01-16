@@ -37,7 +37,7 @@ server.listen(100)
 list_of_clients = []
 
 
-class HotelFarecal:
+class CyberCafe:
     def __init__(self):
         self.occupied_pc = []
         self.available_pc = [1001, 1002, 1003, 1004, 1005]
@@ -107,16 +107,18 @@ class HotelFarecal:
         has_discount = self.discount(client)
         has_membership = self.membership(client)
         if has_discount:
-            client.plan *= 2 - (client.plan * 0.03)
-        elif has_membership:
-            client.plan *= - (client.plan * 0.1)
-        elif has_discount and has_membership:
-            client_plan *= 2 - (client_plan * 0.13)
+            client.plan *= 2 - client.plan * 0.1
+            client.time *= 2
+
+        client.time = datetime.datetime.now() + datetime.timedelta(hours=client.time)
+
+        if has_membership:
+            client.plan -= client.plan * 0.1
+
         client.send(f"Your total payment for your plan is RM{client.plan}\n")
 
     def timer(self, client):
         t = client.plans()
-        
         while t:
         hours = t // 3600
         mins = t // 60
@@ -239,7 +241,7 @@ class Client:
         return self.plan + self.cafe_bill
 
 
-hotel = HotelFarecal()
+cyber = CyberCafe()
 
 
 def clientthread(conn, addr):
@@ -248,7 +250,7 @@ def clientthread(conn, addr):
     client = Client(conn, 0, "")
     while True:
         to_print = """
-        *****WELCOME TO HEWING HOTEL*****
+        *****WELCOME TO HEWING cyber*****
         1.Enter Customer Data
         2.Calculate Plan Bill
         3.Calculate Food bill
@@ -261,16 +263,16 @@ def clientthread(conn, addr):
             input_anda = client.input(to_print)
             b = int(input_anda)
             if (b == 1):
-                hotel.input_data(client)
+                cyber.input_data(client)
 
             if (b == 2):
-                hotel.plans(client)
+                cyber.plans(client)
 
             if (b == 3):
-                hotel.cafe_bill(client)
+                cyber.cafe_bill(client)
 
             if (b == 4):
-                hotel.display(client)
+                cyber.display(client)
 
             if (b == 5):
                 break
