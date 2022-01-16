@@ -37,7 +37,7 @@ server.listen(100)
 list_of_clients = []
 
 
-class HotelFarecal:
+class CyberCafe:
     def __init__(self):
         self.occupied_pc = []
         self.available_pc = [1001, 1002, 1003, 1004, 1005]
@@ -242,7 +242,7 @@ class Client:
         return self.plan + self.cafe_bill
 
 
-hotel = HotelFarecal()
+cyber = CyberCafe()
 
 
 def clientthread(conn, addr):
@@ -251,7 +251,7 @@ def clientthread(conn, addr):
     client = Client(conn, 0, "")
     while True:
         to_print = """
-        *****WELCOME TO HEWING HOTEL*****
+        *****WELCOME TO HEWING cyber*****
         1.Enter Customer Data
         2.Calculate Plan Bill
         3.Calculate Food bill
@@ -264,16 +264,16 @@ def clientthread(conn, addr):
             input_anda = client.input(to_print)
             b = int(input_anda)
             if (b == 1):
-                hotel.input_data(client)
+                cyber.input_data(client)
 
             if (b == 2):
-                hotel.plans(client)
+                cyber.plans(client)
 
             if (b == 3):
-                hotel.cafe_bill(client)
+                cyber.cafe_bill(client)
 
             if (b == 4):
-                hotel.display(client)
+                cyber.display(client)
 
             if (b == 5):
                 break
