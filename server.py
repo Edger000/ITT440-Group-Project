@@ -1,16 +1,13 @@
-import dataclasses
 import socket
-import select
-import sys
 import threading
-import time
+import datetime
 
 """The first argument AF_INET is the address domain of the 
 socket. This is used when we have an Internet Domain with 
 any two hosts The second argument is the type of socket.    
 SOCK_STREAM means that data or characters are read in 
 a continuous flow."""
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)          
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # takes the first argument from command prompt as IP address
@@ -51,10 +48,10 @@ class CyberCafe:
         client.pc = int(client.input(f"{pc_avail}\nEnter your Pc Number:"))
         self.occupied_pc.append(client.pc)
         self.available_pc.remove(client.pc)
-    
+
     def membership(self, client):
         while True:
-            n = client.input("Do you have membership? Member will get 10& discount(y/n)")
+            n = client.input("Do you have membership? Member will get 10% discount(y/n)")
             val = n.lower()
             if val in ('yes', 'y'):
                 return True
@@ -76,27 +73,31 @@ class CyberCafe:
 
     def plans(self, client):
         to_print = """We have the following Plans for you:-
-        1.  Plan A---->Rm 5 for 2 hour\-
-        2.  Plan B---->Rm 10 for 5 hour\-
-        3.  Plan C---->Rm 20 for 7 hour\-
-        4.  Plan D---->Rm 25 for 9 hour\-
-        
+        1.  Plan A---->Rm 5 for 2 hours-
+        2.  Plan B---->Rm 10 for 5 hours-
+        3.  Plan C---->Rm 20 for 7 hours-
+        4.  Plan D---->Rm 25 for 9 hours-
+
         Enter Your Choice Please->"""
         while True:
             try:
                 x = int(client.input(to_print))
-                if (x == 1):
+                if x == 1:
                     client.send("you have opted room Plan A")
                     client.plan = 5
-                elif (x == 2):
+                    client.time = 2
+                elif x == 2:
                     client.send("you have opted room Plan B")
                     client.plan = 10
-                elif (x == 3):
+                    client.time = 5
+                elif x == 3:
                     client.send("you have opted room Plan C")
                     client.plan = 20
-                elif (x == 4):
+                    client.time = 7
+                elif x == 4:
                     client.send("you have opted room Plan D")
                     client.plan = 25
+                    client.time = 9
                 else:
                     client.send("please choose a Plan")
                     continue
@@ -117,17 +118,6 @@ class CyberCafe:
 
         client.send(f"Your total payment for your plan is RM{client.plan}\n")
 
-    def timer(self, client):
-        t = client.plans()
-        while t:
-        hours = t // 3600
-        mins = t // 60
-        secs = t % 3600
-        timer = '{:02d}:{02d}:{02d}'.format(hours, mins, secs)
-        print(timer, end="\r")
-        t -= 1
-        print('Time Up!!')
-    
     def add_time(self, client):
         while True:
             to_print = """We have the following add options for you:-
@@ -172,27 +162,27 @@ class CyberCafe:
         price = None
         while True:
             to_print = """
-            *****Cyber Cafe Menu*****
-            1.water----->RM20
-            2.tea----->RM10
-            3.breakfast combo--->RM90
-            4.lunch---->RM110
-            5.dinner--->RM150
-            6.Exit
-            *********************************
-            Enter your choice:"""
+                *****Cyber Cafe Menu*****
+                1.water----->RM20
+                2.tea----->RM10
+                3.breakfast combo--->RM90
+                4.lunch---->RM110
+                5.dinner--->RM150
+                6.Exit
+                *********************************
+                Enter your choice:"""
             c = int(client.input(to_print))
-            if (c == 1):
+            if c == 1:
                 price = 20
-            elif (c == 2):
+            elif c == 2:
                 price = 10
-            elif (c == 3):
+            elif c == 3:
                 price = 90
-            elif (c == 4):
+            elif c == 4:
                 price = 110
-            elif (c == 5):
+            elif c == 5:
                 price = 150
-            elif (c == 6):
+            elif c == 6:
                 return
             else:
                 client.send("Invalid option")
@@ -216,6 +206,8 @@ class CyberCafe:
         client.send("Room no.", client.pc, "\n")
         client.send("Your PC rent is:", client.plan, "\n")
         client.send("Your Food bill is:", client.cafe_bill, "\n")
+        for time in client.additional_fee:
+            client.send("Additional Fee RM", time)
         client.send("Your grandtotal bill is:", client.total(), "\n")
 
 
@@ -226,6 +218,8 @@ class Client:
         self.name = name
         self.cafe_bill = 0
         self.plan = 0
+        self.additional_fee = []
+        self.time: datetime.timedelta = 0
 
     def input(self, *send):
         to_send = " ".join(map(str, send)) + "<input here>"
@@ -234,11 +228,23 @@ class Client:
 
     def send(self, *to_send):
         formatted = " ".join(map(str, to_send))
-        print("Sending to ", conn.getsockname(), ":", formatted)
+        print("Sending to ", self.conn.getsockname(), ":", formatted)
         self.conn.send(formatted.encode('utf-8'))
 
+    def time_remaining(self):
+        if isinstance(self.time, int):
+            return ""  # invalid
+
+        if self.time <= datetime.datetime.now():
+            return "Time's up"
+
+        current = self.time - datetime.datetime.now()
+        hours, remainder = divmod(current.total_seconds(), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        return f"Time Left: {hours:02.0f}:{minutes:02.0f}:{seconds:02.0f}"
+
     def total(self):
-        return self.plan + self.cafe_bill
+        return self.plan + self.cafe_bill + sum(self.additional_fee)
 
 
 cyber = CyberCafe()
@@ -255,36 +261,44 @@ def clientthread(conn, addr):
         2.Calculate Plan Bill
         3.Calculate Food bill
         4.Show total cost
-        5.EXIT
+        5.Time remaining
+        6.Add More Time
+        7.EXIT
         *********************************
         Enter your choice:"""
 
         try:
             input_anda = client.input(to_print)
             b = int(input_anda)
-            if (b == 1):
+            if b == 1:
                 cyber.input_data(client)
 
-            if (b == 2):
+            if b == 2:
                 cyber.plans(client)
 
-            if (b == 3):
+            if b == 3:
                 cyber.cafe_bill(client)
 
-            if (b == 4):
+            if b == 4:
                 cyber.display(client)
 
-            if (b == 5):
+            if b == 5:
+                client.send(client.time_remaining())
+
+            if b == 6:
+                cyber.add_time(client)
+
+            if b == 7:
                 break
         except ValueError:
             client.send("Invalid number")
     conn.close()
 
 
-while True:
-    """Accepts a connection request and stores two parameters, 
-    conn which is a socket object for that user, and addr 
-    which contains the IP address of the client that just 
+def main():
+    """Accepts a connection request and stores two parameters,
+    conn which is a socket object for that user, and addr
+    which contains the IP address of the client that just
     connected"""
     conn, addr = server.accept()
 
@@ -299,3 +313,7 @@ while True:
     # that connects
     to_start = threading.Thread(target=clientthread, args=(conn, addr))
     to_start.start()
+
+
+while True:
+    main()
