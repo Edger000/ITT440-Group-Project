@@ -1,4 +1,4 @@
-![This is an image](https://thenounproject.com/icon/internet-cafe-229659/)
+![This is an image](https://www.shutterstock.com/image-vector/logo-template-design-cyber-cafe-1386184859)
 
 # Project Title.
 Cyber Cafe Management System
