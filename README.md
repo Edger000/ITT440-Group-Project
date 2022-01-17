@@ -7,4 +7,4 @@ Cyber Cafe Management System
 A simple management system that tracks daily expenses in the Cyber Cafe.
 
 ## Getting Started
-[Contribution guidelines for this project]()
+[Contributing for this project]()
