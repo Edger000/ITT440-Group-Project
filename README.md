@@ -1,4 +1,4 @@
-![This is an image](https://image.shutterstock.com/image-vector/logo-template-design-cyber-cafe-600w-1386184859.jpg)
+![This is an image](https://static.thenounproject.com/png/229660-200.png)
 
 # Project Title.
 Cyber Cafe Management System
