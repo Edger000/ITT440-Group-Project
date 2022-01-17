@@ -4,7 +4,7 @@
 Cyber Cafe Management System
 
 ## Description
-An in-depth paragraph about your project and overview of use.
+A simple management system that tracks daily expenses in the Cyber Cafe.
 
 ## Getting Started
-[Contribution guidelines for this project](docs/CONTRIBUTING.md)
+[Contribution guidelines for this project]()
